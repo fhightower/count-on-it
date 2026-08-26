@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Count On It</title>
+
+<meta name="theme-color" content="#0E0D0B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Count On It">
+
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<main class="stage">
+
+  <header class="bar">
+    <span class="wordmark">COUNT<span class="tick">/</span>ON<span class="tick">/</span>IT</span>
+    <button id="reset" class="reset" type="button" aria-label="Reset count">RESET</button>
+  </header>
+
+  <section class="readout">
+    <div class="gauge" id="gauge">
+      <div class="ring"></div>
+      <div class="bezel"></div>
+      <div class="face">
+        <output id="count" class="count" aria-live="polite">0</output>
+        <div class="of">OF <span id="goalEcho">10</span></div>
+      </div>
+    </div>
+    <p id="status" class="status">10 TO GO</p>
+  </section>
+
+  <section class="goalbar">
+    <button class="nudge" type="button" data-act="goal-down" aria-label="Decrease goal">&minus;</button>
+    <div class="goalval">
+      <span class="goallabel">GOAL</span>
+      <span id="goal" class="goalnum">10</span>
+    </div>
+    <button class="nudge" type="button" data-act="goal-up" aria-label="Increase goal">+</button>
+  </section>
+
+  <section class="pad">
+    <button class="key key--down" type="button" data-act="count-down" aria-label="Decrease count">&minus;</button>
+    <button class="key key--up" type="button" data-act="count-up" aria-label="Increase count">+</button>
+  </section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
