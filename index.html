@@ -24,7 +24,7 @@
 
   <header class="bar">
     <span class="wordmark">COUNT<span class="tick">/</span>ON<span class="tick">/</span>IT</span>
-    <button id="reset" class="reset" type="button" aria-label="Reset count">RESET</button>
+    <button id="reset" class="reset" type="button" aria-label="Reset today's count">RESET</button>
   </header>
 
   <section class="readout">
@@ -39,13 +39,19 @@
     <p id="status" class="status">10 TO GO</p>
   </section>
 
-  <section class="goalbar">
-    <button class="nudge" type="button" data-act="goal-down" aria-label="Decrease goal">&minus;</button>
-    <div class="goalval">
-      <span class="goallabel">GOAL</span>
-      <span id="goal" class="goalnum">10</span>
+  <section class="setup">
+    <label class="field">
+      <span class="fieldlabel">START</span>
+      <input id="startDate" class="datefield" type="date" aria-label="Start date">
+    </label>
+    <div class="fromrow">
+      <button class="nudge" type="button" data-act="start-down" aria-label="Decrease starting number">&minus;</button>
+      <div class="stepval">
+        <span class="steplabel">FROM</span>
+        <span id="startNum" class="stepnum">10</span>
+      </div>
+      <button class="nudge" type="button" data-act="start-up" aria-label="Increase starting number">+</button>
     </div>
-    <button class="nudge" type="button" data-act="goal-up" aria-label="Increase goal">+</button>
   </section>
 
   <section class="pad">

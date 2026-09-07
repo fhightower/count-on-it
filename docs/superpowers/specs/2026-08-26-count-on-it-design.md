@@ -2,11 +2,15 @@
 
 **Date:** 2026-08-26
 **Status:** Approved
+**Amended:** 2026-09-07 — the goal is now derived from a start date rather
+than nudged by hand, and the count is per-day.
 
 ## Purpose
 
 A single-counter app for the author's iPhone. It tracks one count against
-one goal. Both numbers are adjustable from the screen. Nothing else.
+a goal that ramps by one each day: the author sets a start date and the
+number to start from, and the target climbs on its own from there. The
+count is tapped in by hand and belongs to the current day. Nothing else.
 
 The app is for personal use on one device. It is not shipped to anyone
 else and is not submitted to the App Store.
@@ -51,15 +55,35 @@ icons/icon-512.png      home screen icon, larger
 
 ## Data Model
 
-Two integers:
+Four fields, of which only two are set by the author:
 
-- `count` — progress so far
-- `goal` — the target
+- `startDate` — `YYYY-MM-DD`, the day the ramp begins
+- `startNumber` — the goal on that day
+- `count` — progress so far today
+- `countDate` — the day `count` belongs to
+
+The goal is not stored. It is derived on every render:
+
+```
+goal = startNumber + days elapsed since startDate
+```
+
+So a start date one week ago with a starting number of 10 reads 17 today.
+Elapsed days are floored at zero, so a start date in the future holds at
+`startNumber` rather than counting backwards.
+
+Days are local calendar days, not 24-hour spans. `YYYY-MM-DD` is parsed
+into a local midnight by hand, because `new Date('2026-08-29')` parses as
+UTC and lands on the previous day everywhere west of Greenwich; the
+difference between two local midnights is rounded, so the 23- and 25-hour
+days a DST transition produces cannot shift the count by one.
 
 Persisted as one JSON object in `localStorage` under a single key. Written
-on every change. Read once on load; if the key is absent, unparseable, or
-holds anything other than two integers, the app falls back to
-`{ count: 0, goal: 10 }` rather than throwing.
+on every change. Read once on load; any field that is absent, unparseable,
+or hand-edited into nonsense falls back to its default rather than
+throwing. The key is `count-on-it:v2`; the earlier `{ count, goal }` shape
+under `count-on-it:v1` is not migrated, since neither of its numbers means
+what it used to.
 
 Home-screen web apps are exempt from Safari's seven-day script-writable
 storage eviction, so state survives between sessions.
@@ -72,22 +96,35 @@ with the interactive controls in the lower half of the screen.
 - The current count, centered and visually dominant
 - A progress indicator toward the goal, plus a `7 / 20` style readout
 - Large `−` and `+` controls for the count
-- A smaller row for the goal: its value with its own `−` and `+`
+- A setup strip for what the goal is derived from: a native date field for
+  the start date, and the starting number with its own `−` and `+`
 - A reset control for the count, behind a confirmation step
+
+The goal itself has no controls. It is a readout, because it is a function
+of the two fields above it. A native `<input type="date">` is used rather
+than a hand-built picker so the phone supplies its own date wheel.
 
 Reset is deliberately not a bare single-tap button. An accidental reset
 destroys the only thing the app stores. The first tap arms it: the control
 relabels itself to ask for confirmation, and a second tap within three
 seconds performs the reset. If the three seconds lapse, it disarms itself
-and returns to its resting label. Only `count` is reset; `goal` is left
-alone.
+and returns to its resting label. Only today's `count` is reset; the start
+date and starting number are left alone.
 
 ## Rules
 
 - `count` floors at 0. Decrementing at 0 is a no-op.
-- `goal` floors at 1.
+- `startNumber` floors at 1, which floors the goal at 1 with it.
 - `count` may exceed `goal`. Passing the goal is a success state, not an
   error, and the app keeps counting.
+- `count` belongs to one day. When the local date moves past `countDate`,
+  the count returns to 0 and `countDate` catches up. The goal has already
+  moved on by itself.
+
+A home-screen PWA is opened, backgrounded, and left for days rather than
+reloaded, so the day boundary cannot be checked only at startup. It is
+re-checked when the app becomes visible again, when the window regains
+focus, and on a timer armed for the next local midnight.
 
 ## Offline
 
@@ -103,8 +140,9 @@ phone shows the old version".
 
 Local development runs against `python3 -m http.server` and is driven in
 a desktop browser. The acceptance check is installing the app on the
-author's iPhone and using it: increment, decrement, adjust the goal,
-force-quit, reopen, and confirm the numbers survived.
+author's iPhone and using it: increment, decrement, set a start date and
+starting number, force-quit, reopen, and confirm the numbers survived and
+the goal reads what the calendar says it should.
 
 No test framework. At this size the framework would be larger than the
 program, and the failure modes that matter — the icon, the standalone

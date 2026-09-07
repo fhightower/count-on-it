@@ -1,5 +1,5 @@
 /* Bump CACHE on every deploy or the phone keeps serving the old build. */
-var CACHE = 'count-on-it-v1';
+var CACHE = 'count-on-it-v2';
 
 var ASSETS = [
   './',

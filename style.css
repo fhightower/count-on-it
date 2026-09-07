@@ -194,32 +194,74 @@ body {
   min-height: 1em;
 }
 
-/* ---------- goal row ---------- */
+/* ---------- setup: what the goal is derived from ---------- */
 
-.goalbar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  padding: 10px 0;
+.setup {
+  display: grid;
+  gap: clamp(6px, 1.4vh, 12px);
+  padding: clamp(6px, 1.4vh, 12px) 0;
   border-top: 1px solid rgba(239,231,216,0.07);
   border-bottom: 1px solid rgba(239,231,216,0.07);
   animation: drop 0.7s cubic-bezier(.2,.7,.2,1) 0.16s both;
 }
 
-.goalval {
-  display: grid;
-  justify-items: center;
-  gap: 3px;
-  min-width: 92px;
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
 }
-.goallabel {
+
+.fieldlabel {
   font-family: var(--mono);
   font-size: 9px;
   letter-spacing: 0.28em;
   color: var(--dim);
 }
-.goalnum {
+
+.datefield {
+  appearance: none;
+  -webkit-appearance: none;
+  min-height: 38px;
+  padding: 7px 12px;
+  border: 1px solid rgba(239,231,216,0.14);
+  border-radius: 10px;
+  background: rgba(239,231,216,0.04);
+  color: var(--bone);
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  transition: border-color .2s, background .2s;
+}
+.datefield:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: rgba(239,231,216,0.07);
+}
+/* Safari renders the picker chrome dark-on-dark without these. */
+.datefield::-webkit-date-and-time-value { text-align: right; }
+.datefield::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.45; }
+
+.fromrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.stepval {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  min-width: 92px;
+}
+.steplabel {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  color: var(--dim);
+}
+.stepnum {
   font-size: 26px;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -241,6 +283,10 @@ body {
   transform: scale(0.9);
   background: rgba(239,231,216,0.06);
   border-color: rgba(239,231,216,0.3);
+}
+.nudge[disabled] {
+  opacity: 0.34;
+  transform: none;
 }
 
 /* ---------- thumb pad ---------- */
