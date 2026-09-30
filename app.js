@@ -204,6 +204,14 @@
     disarmReset();
   });
 
+  // Keyboard access for the tappable count face.
+  document.querySelector('.face').addEventListener('keydown', function (ev) {
+    if (ev.key === 'Enter' || ev.key === ' ') {
+      ev.preventDefault();
+      this.click();
+    }
+  });
+
   el.startDate.addEventListener('change', function () {
     // A cleared or partial field leaves the stored date alone.
     if (!parseDay(el.startDate.value)) {

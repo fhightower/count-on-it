@@ -31,7 +31,7 @@
     <div class="gauge" id="gauge">
       <div class="ring"></div>
       <div class="bezel"></div>
-      <div class="face">
+      <div class="face" data-act="count-up" role="button" tabindex="0" aria-label="Add one to count">
         <output id="count" class="count" aria-live="polite">0</output>
         <div class="of">OF <span id="goalEcho">10</span></div>
       </div>
@@ -39,9 +39,14 @@
     <p id="status" class="status">10 TO GO</p>
   </section>
 
-  <section class="setup">
+  <details class="setup">
+    <summary class="setuptoggle">
+      <span class="fieldlabel">SET START DATE + COUNT</span>
+      <span class="chev" aria-hidden="true"></span>
+    </summary>
+    <div class="setupbody">
     <label class="field">
-      <span class="fieldlabel">START</span>
+      <span class="fieldlabel">DATE</span>
       <input id="startDate" class="datefield" type="date" aria-label="Start date">
     </label>
     <div class="fromrow">
@@ -52,7 +57,8 @@
       </div>
       <button class="nudge" type="button" data-act="start-up" aria-label="Increase starting number">+</button>
     </div>
-  </section>
+    </div>
+  </details>
 
   <section class="pad">
     <button class="key key--down" type="button" data-act="count-down" aria-label="Decrease count">&minus;</button>
