@@ -356,6 +356,14 @@ body {
     0 18px 40px var(--glow);
 }
 
+/* Press-and-hold targets. A finger drifting mid-hold would otherwise start a
+   pan and cancel the pointer; iOS would also pop its long-press callout. */
+.face,
+.key--up {
+  touch-action: none;
+  -webkit-touch-callout: none;
+}
+
 .key:active {
   transform: translateY(7px);
   box-shadow:

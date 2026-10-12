@@ -7,6 +7,8 @@
   var KEY = 'count-on-it:v2';
   var RESET_ARM_MS = 3000;
   var DAY_MS = 86400000;
+  var HOLD_MS = 1000;
+  var HOLD_STEP = 5;
 
   var el = {
     count:     document.getElementById('count'),
@@ -21,6 +23,8 @@
   var state = load();
   var resetTimer = null;
   var midnightTimer = null;
+  var holdTimer = null;
+  var holdFired = false;
 
   /* ---------- date math ---------- */
 
@@ -198,6 +202,12 @@
     var act = actions[btn.dataset.act];
     if (!act) return;
 
+    // A hold already counted this press; its release still fires a click.
+    if (holdFired && btn.dataset.act === 'count-up') {
+      holdFired = false;
+      return;
+    }
+
     act();
     save();
     render(btn.dataset.act.indexOf('count') === 0);
@@ -211,6 +221,49 @@
       this.click();
     }
   });
+
+  /* ---------- press and hold ---------- */
+
+  // Holding the face or + adds five each second until release. A press shorter
+  // than a second falls through to the click handler as a plain +1.
+  function holdTick() {
+    holdFired = true;
+    state.count += HOLD_STEP;
+    save();
+    render(true);
+    disarmReset();
+  }
+
+  function startHold(ev) {
+    holdFired = false;
+    if (ev.button !== 0) return;
+    stopHold();
+    holdTimer = setInterval(holdTick, HOLD_MS);
+  }
+
+  function stopHold() {
+    clearInterval(holdTimer);
+    holdTimer = null;
+  }
+
+  // Sliding off or a cancelled touch means no click is coming to swallow.
+  // Touch fires pointerleave after pointerup, by which point the timer is
+  // already gone and the flag survives for the click.
+  function abandonHold() {
+    if (holdTimer) holdFired = false;
+    stopHold();
+  }
+
+  document.querySelectorAll('[data-act="count-up"]').forEach(function (btn) {
+    btn.addEventListener('pointerdown', startHold);
+    btn.addEventListener('pointerup', stopHold);
+    btn.addEventListener('pointerleave', abandonHold);
+    btn.addEventListener('pointercancel', abandonHold);
+    // Android raises a context menu on long press, which cancels the pointer.
+    btn.addEventListener('contextmenu', function (ev) { ev.preventDefault(); });
+  });
+
+  window.addEventListener('blur', abandonHold);
 
   el.startDate.addEventListener('change', function () {
     // A cleared or partial field leaves the stored date alone.
