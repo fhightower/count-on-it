@@ -1,5 +1,5 @@
 /* Bump CACHE on every deploy or the phone keeps serving the old build. */
-var CACHE = 'count-on-it-v6';
+var CACHE = 'count-on-it-v7';
 
 var ASSETS = [
   './',
@@ -11,10 +11,23 @@ var ASSETS = [
   './icons/icon-512.png'
 ];
 
+// Whatever lands in the cache is served until the next bump, so fetch around
+// both caches that can still hold the last build: the browser's (Cloudflare
+// tells it four hours) and Cloudflare's own edge (the query string is part
+// of its cache key, so a new CACHE name always misses).
+function precache(cache, url) {
+  return fetch(url + '?v=' + CACHE, { cache: 'reload' }).then(function (res) {
+    if (!res.ok) throw new Error(url + ' ' + res.status);
+    return cache.put(url, res);
+  });
+}
+
 self.addEventListener('install', function (ev) {
   ev.waitUntil(
     caches.open(CACHE).then(function (cache) {
-      return cache.addAll(ASSETS);
+      return Promise.all(ASSETS.map(function (url) {
+        return precache(cache, url);
+      }));
     }).then(function () {
       return self.skipWaiting();
     })
